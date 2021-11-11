@@ -9,6 +9,7 @@ use primitives::{
     },
     crh::FieldBasedHash,
 };
+use r1cs_core::{ConstraintSystem, ConstraintSystemDebugger};
 use r1cs_crypto::{
     signature::FieldBasedSigGadget,
     crh::{TweedleFrPoseidonHashGadget as PoseidonHashGadget, FieldBasedHashGadget}
@@ -20,10 +21,9 @@ use r1cs_std::{
     bits::{
         boolean::Boolean, FromBitsGadget,
     },
-    eq::EqGadget, test_constraint_system::TestConstraintSystem,
+    eq::EqGadget
 };
 
-use r1cs_core::ConstraintSystem;
 use crate::{
     constants::NaiveThresholdSigParams, type_mapping::*, naive_threshold_sig::*,
 };
@@ -189,7 +189,7 @@ fn generate_inputs
 
 fn generate_constraints(
     c: NaiveTresholdSignatureTest,
-    mut cs: TestConstraintSystem<FieldElement>,
+    mut cs: ConstraintSystem<FieldElement>,
 ) -> bool
 {
     //Internal checks
@@ -404,7 +404,7 @@ fn random_naive_threshold_sig_test() {
         println!("CS satisfiable: {}", satisfiable);
 
         let c = generate_inputs(n, v, t, false, false);
-        let cs = TestConstraintSystem::<FieldElement>::new();
+        let cs = ConstraintSystem::<FieldElement>::new(r1cs_core::SynthesisMode::Debug);
         let is_satisfied = generate_constraints(c, cs);
 
         // The output must be false whenever the cs should be satisfiable
@@ -424,7 +424,7 @@ fn naive_threshold_sig_test_all_cases() {
     let v = rng.gen_range(1..n);
     let t = rng.gen_range(0..v);
     let c = generate_inputs(n, v, t, false, false);
-    let cs = TestConstraintSystem::<FieldElement>::new();
+    let cs = ConstraintSystem::<FieldElement>::new(r1cs_core::SynthesisMode::Debug);
     assert!(generate_constraints(c, cs));
     println!("Ok !");
 
@@ -432,7 +432,7 @@ fn naive_threshold_sig_test_all_cases() {
     let v = rng.gen_range(1..n);
     let t = v;
     let c = generate_inputs(n, v, t, false, false);
-    let cs = TestConstraintSystem::<FieldElement>::new();
+    let cs = ConstraintSystem::<FieldElement>::new(r1cs_core::SynthesisMode::Debug);
     assert!(generate_constraints(c, cs));
     println!("Ok !");
 
@@ -440,31 +440,31 @@ fn naive_threshold_sig_test_all_cases() {
     let t = rng.gen_range(1..n);
     let v = rng.gen_range(0..t);
     let c = generate_inputs(n, v, t, false, false);
-    let cs = TestConstraintSystem::<FieldElement>::new();
+    let cs = ConstraintSystem::<FieldElement>::new(r1cs_core::SynthesisMode::Debug);
     assert!(!generate_constraints(c, cs));
     println!("Ok !");
 
     println!("Test case v = t = 0");
     let c = generate_inputs(n, 0, 0, false, false);
-    let cs = TestConstraintSystem::<FieldElement>::new();
+    let cs = ConstraintSystem::<FieldElement>::new(r1cs_core::SynthesisMode::Debug);
     assert!(generate_constraints(c, cs));
     println!("Ok !");
 
     println!("Test case v = t = n");
     let c = generate_inputs(n, n, n, false, false);
-    let cs = TestConstraintSystem::<FieldElement>::new();
+    let cs = ConstraintSystem::<FieldElement>::new(r1cs_core::SynthesisMode::Debug);
     assert!(generate_constraints(c, cs));
     println!("Ok !");
 
     println!("Test case v = n and t = 0");
     let c = generate_inputs(n, n, 0, false, false);
-    let cs = TestConstraintSystem::<FieldElement>::new();
+    let cs = ConstraintSystem::<FieldElement>::new(r1cs_core::SynthesisMode::Debug);
     assert!(generate_constraints(c, cs));
     println!("Ok !");
 
     println!("Test negative case v = 0 and t = n");
     let c = generate_inputs(n, 0, n, false, false);
-    let cs = TestConstraintSystem::<FieldElement>::new();
+    let cs = ConstraintSystem::<FieldElement>::new(r1cs_core::SynthesisMode::Debug);
     assert!(!generate_constraints(c, cs));
     println!("Ok !");
 
@@ -472,7 +472,7 @@ fn naive_threshold_sig_test_all_cases() {
     let v = rng.gen_range(1..n);
     let t = rng.gen_range(0..v);
     let c = generate_inputs(n, v, t, true, false);
-    let cs = TestConstraintSystem::<FieldElement>::new();
+    let cs = ConstraintSystem::<FieldElement>::new(r1cs_core::SynthesisMode::Debug);
     assert!(!generate_constraints(c, cs));
     println!("Ok !");
 
@@ -480,7 +480,7 @@ fn naive_threshold_sig_test_all_cases() {
     let v = rng.gen_range(1..n);
     let t = rng.gen_range(0..v);
     let c = generate_inputs(n, v, t, false, true);
-    let cs = TestConstraintSystem::<FieldElement>::new();
+    let cs = ConstraintSystem::<FieldElement>::new(r1cs_core::SynthesisMode::Debug);
     assert!(!generate_constraints(c, cs));
     println!("Ok !");
 }

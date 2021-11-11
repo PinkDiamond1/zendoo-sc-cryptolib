@@ -26,7 +26,7 @@ use r1cs_std::{instantiated::tweedle::TweedleDumGadget as CurveGadget, fields::{
     boolean::Boolean, uint64::UInt64, FromBitsGadget,
 }, eq::EqGadget, Assignment};
 
-use r1cs_core::{ConstraintSystem, ConstraintSynthesizer, SynthesisError};
+use r1cs_core::{ConstraintSynthesizer, ConstraintSystemAbstract, SynthesisError};
 
 use crate::{
     constants::NaiveThresholdSigParams, type_mapping::*,
@@ -110,7 +110,7 @@ impl<F: PrimeField>NaiveTresholdSignature<F> {
 }
 
 impl<F: PrimeField> ConstraintSynthesizer<FieldElement> for NaiveTresholdSignature<F> {
-    fn generate_constraints<CS: ConstraintSystem<FieldElement>>(self, cs: &mut CS) -> Result<(), SynthesisError> {
+    fn generate_constraints<CS: ConstraintSystemAbstract<FieldElement>>(self, cs: &mut CS) -> Result<(), SynthesisError> {
 
         //Internal checks
         let log_max_pks = (self.max_pks.next_power_of_two() as u64).trailing_zeros() as usize;
